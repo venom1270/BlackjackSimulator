@@ -17,6 +17,9 @@ public class Game {
     private Hand dealerHand;
     private Hand playerHand;
 
+    private boolean playerSplit;
+    private List<Hand> splitHands;
+
     public Game(int numberOfDecks) {
         this.numberOfDecks = numberOfDecks;
         initializeDeck();
@@ -27,12 +30,13 @@ public class Game {
         deck = new ArrayList<>();
         this.currentCard = 0;
 
-        for (int s = 0; s < 4; s++) {
-            for (int v = 0; v < 13; v++) {
-                this.deck.add(new Card(Value.values()[v], Suit.values()[s]));
+        for (int i = 0; i < this.numberOfDecks; i++) {
+            for (int s = 0; s < 4; s++) {
+                for (int v = 0; v < 13; v++) {
+                    this.deck.add(new Card(Value.values()[v], Suit.values()[s]));
+                }
             }
         }
-
     }
 
     private void shuffleDeck() {
@@ -43,6 +47,8 @@ public class Game {
         this.currentCard = 0;
         this.dealerHand = new Hand();
         this.playerHand = new Hand();
+        this.playerSplit = false;
+        this.splitHands = new ArrayList<>();
         shuffleDeck();
     }
 
@@ -86,7 +92,27 @@ public class Game {
     }
 
     public void split(Hand hand) {
-        // TODO
+
+        // TODO: support for more than 1 split?
+
+        this.playerSplit = true;
+        Hand hand1 = new Hand();
+        hand1.add(hand.getCards().get(0));
+        Hand hand2 = new Hand();
+        hand2.add(hand.getCards().get(1));
+
+        hand1.add(getCard());
+        hand2.add(getCard());
+
+        this.splitHands.add(hand1);
+        this.splitHands.add(hand2);
     }
 
+    public boolean isPlayerSplit() {
+        return playerSplit;
+    }
+
+    public List<Hand> getSplitHands() {
+        return splitHands;
+    }
 }

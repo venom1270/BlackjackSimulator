@@ -77,13 +77,13 @@ public class Hand {
     @Override
     public String toString() {
         if (this.same && this.cards.get(0).getValue() == Value.ACE) {
-            return "A-A";
+            return "A-A (12)";
         }
         if (this.same) {
-            return (this.value/2) + "-" + (this.value/2);
+            return (this.value/2) + "-" + (this.value/2) + " (" + this.value + ")";
         }
         if (this.ace > 0) {
-            return "A-" + (this.value-11);
+            return "A-" + (this.value-11) + " (" + this.value + ")";
         }
         return String.valueOf(this.value);
     }
@@ -92,8 +92,14 @@ public class Hand {
         String hand = "";
 
         if (this.bust) {
-            hand = " --- BUST --- ";
+            hand += " BUST | ";
         }
+
+        if (this.blackjack) {
+            hand += " BLACKJACK | ";
+        }
+
+        hand += toString() + " | ";
 
         for (Card c : this.cards) {
             hand += c.toString() + ", ";

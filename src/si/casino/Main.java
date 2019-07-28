@@ -1,15 +1,11 @@
 package si.casino;
 
-import si.casino.card.Card;
-import si.casino.card.Suit;
-import si.casino.card.Value;
-
 public class Main {
 
     public static void main(String[] args) {
 
-        Player player = new Player();
-        player.run();
+        Game game = new Game();
+        game.run();
 
 
         /*

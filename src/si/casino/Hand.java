@@ -19,16 +19,19 @@ public class Hand {
     private boolean doubleDown;
     private boolean blackjack;
 
+    private boolean enableSplit; // To limit to only one split
+
     private boolean bust;
 
-    private Set<Plays> possiblePlays;
+    private List<Plays> possiblePlays;
 
     public Hand() {
         this.cards = new ArrayList<>();
-        this.possiblePlays = new HashSet<>();
+        this.possiblePlays = new ArrayList<>();
         this.possiblePlays.add(Plays.HIT);
         this.possiblePlays.add(Plays.STAND);
         this.possiblePlays.add(Plays.DOUBLE_DOWN);
+        this.enableSplit = true;
     }
 
     public void add(Card card) {
@@ -49,7 +52,10 @@ public class Hand {
         }
         if (this.cards.size() == 2 && this.cards.get(0).getValue() == this.cards.get(1).getValue()) {
             same = true;
-            possiblePlays.add(Plays.SPLIT);
+            if (enableSplit) {
+                // Only enable splitting if enableSplit is true - this is used to limit only one split per round
+                possiblePlays.add(Plays.SPLIT);
+            }
         } else {
             same = false;
             this.possiblePlays.remove(Plays.SPLIT);
@@ -132,7 +138,7 @@ public class Hand {
         return bust;
     }
 
-    public Set<Plays> getPossiblePlays() {
+    public List<Plays> getPossiblePlays() {
         return possiblePlays;
     }
 
@@ -144,7 +150,11 @@ public class Hand {
         return blackjack;
     }
 
-    public void setBlackjack(boolean blackjack) {
-        this.blackjack = blackjack;
+    public boolean isEnableSplit() {
+        return enableSplit;
+    }
+
+    public void setEnableSplit(boolean enableSplit) {
+        this.enableSplit = enableSplit;
     }
 }

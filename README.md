@@ -2,7 +2,7 @@
 
 This is a simple Blackjack simulator.
 
-Current versions supports only player vs. dealer.
+Current version supports only player vs. dealer.
 
 # TODOs:
 
@@ -11,5 +11,5 @@ Current versions supports only player vs. dealer.
 - [ ] Implement simulator with statistics logging
 - [ ] Usage of different strategies
   - [ ] Play strategies
-  - [ ] Betting startegies
+  - [ ] Betting strategies
 - [ ] Experimentation with different deck sizes

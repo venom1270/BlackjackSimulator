@@ -4,6 +4,7 @@ import si.casino.card.Card;
 import si.casino.players.HumanPlayer;
 import si.casino.players.Player;
 import si.casino.players.RandomPlayer;
+import si.casino.players.StrategyPlayer;
 import si.casino.plays.Plays;
 
 import java.util.ArrayList;
@@ -36,15 +37,19 @@ public class Game {
         System.out.println("Choose number of decks: (1-6)");
         table = new Table(InputManager.getValidInputInt(validInts));
 
-        System.out.println("Choose player type: (1-Human, 2-Simulator_Random)");
+        System.out.println("Choose player type: (1-Human, 2-Simulator_Random, 3-Simulator_Strategy)");
         validInts.clear();
         validInts.add(1);
         validInts.add(2);
+        validInts.add(3);
         int playerType = InputManager.getValidInputInt(validInts);
         if (playerType == 1) {
             player = new HumanPlayer();
-        } else {
+        } else if (playerType == 2) {
             player = new RandomPlayer();
+        } else if (playerType == 3) {
+            //player = new StrategyPlayer("strategies/baseline_strategy.csv");
+            player = new StrategyPlayer("strategies/conservative_strategy.csv");
         }
 
         int numberOfGames = 0;

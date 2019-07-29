@@ -1,7 +1,10 @@
 package si.casino;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class InputManager {
 
@@ -39,6 +42,16 @@ public class InputManager {
                 System.out.println("Invalid input!");
             }
         }
+    }
+
+    public static List<String> readStrategy(String path) {
+        try {
+            List<String> lines = Files.lines(Paths.get(path)).collect(Collectors.toList());
+            return lines;
+        } catch (Exception e) {
+            System.out.println("Error while reading file file! " + e.getMessage());
+        }
+        return null;
     }
 
 }

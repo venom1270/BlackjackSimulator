@@ -1,5 +1,9 @@
 package si.casino;
 
+import si.casino.card.Card;
+import si.casino.card.Suit;
+import si.casino.card.Value;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -8,6 +12,31 @@ public class Main {
         game.run();
 
 
+        /*
+        //THREE OF HEARTS, TWO OF SPADES, ACE OF HEARTS, FOUR OF CLUBS, ACE OF DIAMONDS
+        Hand h = new Hand();
+
+        h.add(new Card(Value.THREE, Suit.HEARTS));
+        System.out.println(h.toStringVerbose());
+        System.out.println(h.isBlackjack());
+
+        h.add(new Card(Value.TWO, Suit.HEARTS));
+        System.out.println(h.toStringVerbose());
+        System.out.println(h.isBlackjack());
+
+        h.add(new Card(Value.ACE, Suit.HEARTS));
+        System.out.println(h.toStringVerbose());
+        System.out.println(h.isBlackjack());
+
+        h.add(new Card(Value.FOUR, Suit.HEARTS));
+        System.out.println(h.toStringVerbose());
+        System.out.println(h.isBlackjack());
+
+        h.add(new Card(Value.ACE, Suit.HEARTS));
+        System.out.println(h.toStringVerbose());
+        System.out.println(h.isBlackjack());
+
+        */
         /*
         int h = 0, c = 0, s = 0, d = 0;
         for (int i = 0; i < 10000000; i++) {

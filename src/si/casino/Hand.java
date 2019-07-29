@@ -70,6 +70,10 @@ public class Hand {
         if (this.value > 21 && this.ace > 0) {
             this.value -= 10;
             this.ace--;
+            if (this.value == 21) {
+                this.blackjack = true;
+                this.possiblePlays.clear();
+            }
         } else if (this.value > 21) {
             bust = true;
             this.possiblePlays.clear();
@@ -83,13 +87,13 @@ public class Hand {
     @Override
     public String toString() {
         if (this.same && this.cards.get(0).getValue() == Value.ACE) {
-            return "A-A (12)";
+            return "A-A";
         }
         if (this.same) {
-            return (this.value/2) + "-" + (this.value/2) + " (" + this.value + ")";
+            return (this.value/2) + "-" + (this.value/2); //+ " (" + this.value + ")";
         }
         if (this.ace > 0) {
-            return "A-" + (this.value-11) + " (" + this.value + ")";
+            return "A-" + (this.value-11); //+ " (" + this.value + ")";
         }
         return String.valueOf(this.value);
     }

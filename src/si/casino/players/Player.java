@@ -8,4 +8,6 @@ public interface Player {
 
     Plays makePlay(Hand playerHand, Card faceUpCard);
 
+    int getBet(int previousGame, int previusBet);
+
 }

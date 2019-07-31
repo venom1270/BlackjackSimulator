@@ -6,7 +6,6 @@ import si.casino.plays.Plays;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 public class RandomPlayer implements Player {
 
@@ -20,6 +19,11 @@ public class RandomPlayer implements Player {
     public Plays makePlay(Hand playerHand, Card faceUpCard) {
         List<Plays> possiblePlays = playerHand.getPossiblePlays();
         return possiblePlays.get(random.nextInt(possiblePlays.size()));
+    }
+
+    @Override
+    public int getBet(int previousGame, int previousBet) {
+        return random.nextInt(1000)+1;
     }
 
 }

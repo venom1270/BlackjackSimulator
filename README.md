@@ -1,18 +1,20 @@
-# BlackjackSimulator
+# Blackjack Simulator
 
 This is a simple Blackjack simulator.
 
-Current version supports only game vs. dealer.
+Current version supports player vs. dealer, random AI and strategy AI.
+
+Strategies are defined as .csv file in the /strategies directory.
 
 # TODOs:
 
 - [x] Add Split plays
-- [ ] Add betting
+- [x] Add betting
 - [x] Implement simulator with statistics logging
-- [ ] Usage of different strategies
+- [x] Usage of different strategies
   - [x] Play strategies
-  - [ ] Betting strategies
-- [ ] Experimentation with different deck sizes
+  - [x] Betting strategies
+- [x] Experimentation with different deck sizes
 
 # Some interesting preliminary results
 

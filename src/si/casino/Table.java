@@ -106,8 +106,15 @@ public class Table {
         hand1.add(getCard());
         hand2.add(getCard());
 
+        hand1.setBetAmount(hand.getBetAmount());
+        hand2.setBetAmount(hand.getBetAmount());
+
         this.splitHands.add(hand1);
         this.splitHands.add(hand2);
+    }
+
+    public void setBet(int bet) {
+        this.playerHand.setBetAmount(bet);
     }
 
     public boolean isPlayerSplit() {
@@ -117,4 +124,5 @@ public class Table {
     public List<Hand> getSplitHands() {
         return splitHands;
     }
+
 }

@@ -19,6 +19,8 @@ public class Hand {
     private boolean doubleDown;
     private boolean blackjack;
 
+    private int betAmount;
+
     private boolean enableSplit; // To limit to only one split
 
     private boolean bust;
@@ -71,14 +73,19 @@ public class Hand {
             this.value -= 10;
             this.ace--;
             if (this.value == 21) {
-                this.blackjack = true;
+                // We use enableSplit to check if this is the original hand
+                if (this.cards.size() == 2 && this.enableSplit) {
+                    this.blackjack = true;
+                }
                 this.possiblePlays.clear();
             }
         } else if (this.value > 21) {
             bust = true;
             this.possiblePlays.clear();
         } else if (this.value == 21) {
-            this.blackjack = true;
+            if (this.cards.size() == 2 && this.enableSplit) {
+                this.blackjack = true;
+            }
             this.possiblePlays.clear();
         }
 
@@ -123,6 +130,7 @@ public class Hand {
     public void doubleDown(Card card) {
         this.add(card);
         this.doubleDown = true;
+        this.betAmount *= 2;
         possiblePlays.clear();
     }
 
@@ -160,5 +168,17 @@ public class Hand {
 
     public void setEnableSplit(boolean enableSplit) {
         this.enableSplit = enableSplit;
+    }
+
+    public int getBetAmount() {
+        return betAmount;
+    }
+
+    public void setBetAmount(int betAmount) {
+        this.betAmount = betAmount;
+    }
+
+    public boolean isDoubleDown() {
+        return doubleDown;
     }
 }

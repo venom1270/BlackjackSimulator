@@ -13,7 +13,10 @@ import java.util.Map;
 public class StrategyPlayer implements Player{
 
     List<String> strategyLines;
-    Map<KeyPair, Plays> strategy;
+    Map<KeyPair, Plays> playStrategy;
+
+    List<String> bettingLines;
+    Map<Integer, Float> bettingStrategy;
 
     public class KeyPair {
         private final Value dealer;
@@ -39,17 +42,19 @@ public class StrategyPlayer implements Player{
         }
     }
 
-    public StrategyPlayer(String path) {
-        strategyLines = InputManager.readStrategy(path);
-        strategy = null;
-        parseStrategy();
+    public StrategyPlayer(String playStrategyPath, String bettingStrategyPath) {
+        strategyLines = InputManager.readLines(playStrategyPath);
+        playStrategy = null;
+        bettingLines = InputManager.readLines(bettingStrategyPath);
+        parsePlayStrategy();
+        parseBettingStrategy();
     }
 
     @Override
     public Plays makePlay(Hand playerHand, Card faceUpCard) {
-        if (strategy != null) {
+        if (playStrategy != null) {
             System.out.println(playerHand.toString());
-            Plays chosenPlay = strategy.get(new KeyPair(playerHand.toString(), faceUpCard.getValue()));
+            Plays chosenPlay = playStrategy.get(new KeyPair(playerHand.toString(), faceUpCard.getValue()));
             if (!playerHand.getPossiblePlays().contains(chosenPlay)) {
                 // Handle plays taht are not possible anymore
                 // 1. Double down after hitting
@@ -58,7 +63,7 @@ public class StrategyPlayer implements Player{
                     chosenPlay = Plays.HIT;
                 } else if (chosenPlay == Plays.SPLIT) {
                     System.out.println(chosenPlay);
-                    chosenPlay = strategy.get(new KeyPair(String.valueOf(playerHand.getValue()), faceUpCard.getValue()));
+                    chosenPlay = playStrategy.get(new KeyPair(String.valueOf(playerHand.getValue()), faceUpCard.getValue()));
                 }
 
             }
@@ -68,11 +73,22 @@ public class StrategyPlayer implements Player{
         }
     }
 
-    private void parseStrategy() {
+    @Override
+    public int getBet(int previousGame, int previousBet) {
+        float betFactor = bettingStrategy.get(previousGame);
+        if (betFactor == -1.0f) {
+            // Reset to initial bet
+            return 1;
+        } else {
+            return (int)(previousBet * betFactor);
+        }
+    }
+
+    private void parsePlayStrategy() {
 
         // TODO mybe: check header and parse accordingly
 
-        strategy = new HashMap<>();
+        playStrategy = new HashMap<>();
 
         strategyLines.remove(0);
         for (String line : strategyLines) {
@@ -97,23 +113,48 @@ public class StrategyPlayer implements Player{
                 if (multiple) {
                     value = String.valueOf(i);
                 }
-                strategy.put(new KeyPair(value, Value.ACE), stringToPlays(data[1]));
-                strategy.put(new KeyPair(value, Value.KING), stringToPlays(data[2]));
-                strategy.put(new KeyPair(value, Value.QUEEN), stringToPlays(data[2]));
-                strategy.put(new KeyPair(value, Value.JACK), stringToPlays(data[2]));
-                strategy.put(new KeyPair(value, Value.TEN), stringToPlays(data[2]));
-                strategy.put(new KeyPair(value, Value.NINE), stringToPlays(data[3]));
-                strategy.put(new KeyPair(value, Value.EIGHT), stringToPlays(data[4]));
-                strategy.put(new KeyPair(value, Value.SEVEN), stringToPlays(data[5]));
-                strategy.put(new KeyPair(value, Value.SIX), stringToPlays(data[6]));
-                strategy.put(new KeyPair(value, Value.FIVE), stringToPlays(data[7]));
-                strategy.put(new KeyPair(value, Value.FOUR), stringToPlays(data[8]));
-                strategy.put(new KeyPair(value, Value.THREE), stringToPlays(data[9]));
-                strategy.put(new KeyPair(value, Value.TWO), stringToPlays(data[10]));
+                playStrategy.put(new KeyPair(value, Value.ACE), stringToPlays(data[1]));
+                playStrategy.put(new KeyPair(value, Value.KING), stringToPlays(data[2]));
+                playStrategy.put(new KeyPair(value, Value.QUEEN), stringToPlays(data[2]));
+                playStrategy.put(new KeyPair(value, Value.JACK), stringToPlays(data[2]));
+                playStrategy.put(new KeyPair(value, Value.TEN), stringToPlays(data[2]));
+                playStrategy.put(new KeyPair(value, Value.NINE), stringToPlays(data[3]));
+                playStrategy.put(new KeyPair(value, Value.EIGHT), stringToPlays(data[4]));
+                playStrategy.put(new KeyPair(value, Value.SEVEN), stringToPlays(data[5]));
+                playStrategy.put(new KeyPair(value, Value.SIX), stringToPlays(data[6]));
+                playStrategy.put(new KeyPair(value, Value.FIVE), stringToPlays(data[7]));
+                playStrategy.put(new KeyPair(value, Value.FOUR), stringToPlays(data[8]));
+                playStrategy.put(new KeyPair(value, Value.THREE), stringToPlays(data[9]));
+                playStrategy.put(new KeyPair(value, Value.TWO), stringToPlays(data[10]));
             }
 
         }
 
+    }
+
+    private void parseBettingStrategy() {
+        bettingStrategy = new HashMap<>();
+
+        // TODO: read header?? mybe
+        bettingLines.remove(0);
+        for (String line : bettingLines) {
+            String[] data = line.split(";");
+
+            // W=1, L=-1, P=0, DW=2, DL=-2
+            bettingStrategy.put(1, stringToBet(data[1]));
+            bettingStrategy.put(-1, stringToBet(data[2]));
+            bettingStrategy.put(0, stringToBet(data[3]));
+            bettingStrategy.put(2, stringToBet(data[4]));
+            bettingStrategy.put(-2, stringToBet(data[5]));
+        }
+    }
+
+    private float stringToBet(String bet) {
+        if (bet.equals("R")) {
+            return -1.0f;
+        } else {
+            return Float.valueOf(bet);
+        }
     }
 
     private Plays stringToPlays(String play) {

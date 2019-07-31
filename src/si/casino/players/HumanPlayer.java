@@ -52,5 +52,11 @@ public class HumanPlayer implements Player{
 
     }
 
+    @Override
+    public int getBet(int previousGame, int previousBet) {
+        System.out.println("Bet amount:");
+        return InputManager.getValidInputInt(null);
+    }
+
 
 }

@@ -15,7 +15,7 @@ public class InputManager {
             try {
                 System.out.print("> ");
                 int input = keyboard.nextInt();
-                if (validInts == null || validInts.contains(input)) {
+                if ((validInts == null || validInts.contains(input)) && input > 0) {
                     keyboard.nextLine();
                     return input;
                 } else {
@@ -44,7 +44,7 @@ public class InputManager {
         }
     }
 
-    public static List<String> readStrategy(String path) {
+    public static List<String> readLines(String path) {
         try {
             List<String> lines = Files.lines(Paths.get(path)).collect(Collectors.toList());
             return lines;

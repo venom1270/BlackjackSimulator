@@ -10,6 +10,11 @@ import si.casino.plays.Plays;
 import java.util.ArrayList;
 import java.util.List;
 
+
+// TODO: BLACKJACK ONLY ON FFIRST TWO CARDS --DONE
+//  TODO: SPLIT DOESN't COUNT --DONE
+//   PLAYER AND DEALER BLACKJACK - PUSH --DONE
+
 public class Game {
 
     private Table table;
@@ -21,6 +26,7 @@ public class Game {
     private int splits;
 
     Player player;
+    private int chips;
 
 
     public Game() {
@@ -30,6 +36,7 @@ public class Game {
 
     public void run() {
 
+        chips = 1000;
         List<Integer> validInts = new ArrayList<>();
         for (int i = 1; i <= 6; i++) {
             validInts.add(i);
@@ -49,19 +56,35 @@ public class Game {
             player = new RandomPlayer();
         } else if (playerType == 3) {
             //player = new StrategyPlayer("strategies/baseline_strategy.csv");
-            player = new StrategyPlayer("strategies/conservative_strategy.csv");
+            String strategyFile = "baseline_strategy.csv";
+            player = new StrategyPlayer("strats/play/" + strategyFile, "strats/betting/" + strategyFile);
         }
 
         int numberOfGames = 0;
         System.out.println("Choose number of games: ");
         numberOfGames = InputManager.getValidInputInt(null);
 
+        System.out.println("Starting with " + this.chips + " chips.");
+
         final String DELIMITER = "********************";
+
+        int previousGameOutcome = 0;
+        int previousBet = 1;
 
         for (int gameIndex = 0; gameIndex < numberOfGames; gameIndex++) {
 
             System.out.println(DELIMITER + " GAME " + (gameIndex+1) + " " + DELIMITER);
             table.reset();
+
+            int currentBet = player.getBet(previousGameOutcome, previousBet);
+            /*if (currentBet > 128) {
+                currentBet = 128;
+            }*/
+            table.setBet(currentBet);
+            previousBet = currentBet;
+            System.out.println("Player bets " + currentBet);
+            //this.chips -= currentBet;
+            previousGameOutcome = 0;
 
             table.deal();
             System.out.println("Dealer's face up card: " + table.seeDealerCard());
@@ -89,12 +112,24 @@ public class Game {
                     }
                 } else {
                     System.out.println("Your hand: " + table.getPlayerHand().toStringVerbose());
-                    calculateScore(table.getPlayerHand());
+                    previousGameOutcome += calculateScore(table.getPlayerHand());
                 }
             } else {
                 System.out.println("DEALER HAS BLACKJACK! " + table.getDealerHand().toStringVerbose());
-                losses++;
+                if (table.getPlayerHand().isBlackjack()) {
+                    previousGameOutcome = 0;
+                    System.out.println("PUSH");
+                    pushes++;
+                } else {
+                    previousGameOutcome = -1;
+                    System.out.println("YOU LOSE");
+                    losses++;
+                    this.chips -= table.getPlayerHand().getBetAmount();
+                }
             }
+
+            if (previousGameOutcome > 2) previousGameOutcome = 2;
+            else if (previousGameOutcome < -2) previousGameOutcome = -2;
 
             gamesPlayed++;
 
@@ -104,6 +139,8 @@ public class Game {
             System.out.println("Pushes: " + pushes);
             System.out.println("Splits: " + splits);
             System.out.println("Games played: " + gamesPlayed);
+            System.out.println("Chips: " + this.chips);
+            System.out.println();
 
             /*System.out.println("Keep playing? (y)");
             if (InputManager.getValidInput(null) != 'y') {
@@ -148,7 +185,7 @@ public class Game {
                 System.out.println("SPLIT | HAND " + handCount + ": " + hand.toStringVerbose());
                 while (hand.getPossiblePlays().size() != 0) {
                     playerMakeMove(hand, faceUpCard);
-                    System.out.println("Game's hand " + handCount + ": " + table.getPlayerHand().toStringVerbose());
+                    System.out.println("Game's hand " + handCount + ": " + hand.toStringVerbose());
                 }
                 handCount++;
             }
@@ -245,18 +282,45 @@ public class Game {
         }
     }
 
-    private void calculateScore(Hand playerHand) {
+    private int calculateScore(Hand playerHand) {
+
+        /*if (playerHand.isBlackjack()) {
+            System.out.println("YOU WON!");
+            wins++;
+            this.chips += (playerHand.getBetAmount() * (3/2));
+            return 1;
+        }*/
+
         if (playerHand.isBust() || (!table.getDealerHand().isBust() && table.getDealerHand().getValue() > playerHand.getValue())) {
             System.out.println("YOU LOST");
             losses++;
+            this.chips -= playerHand.getBetAmount();
+            if (playerHand.isDoubleDown()) {
+                return -2;
+            } else {
+                return -1;
+            }
         } else if (table.getDealerHand().isBust() || table.getDealerHand().getValue() < playerHand.getValue() || playerHand.isBlackjack()) {
-            wins++;
             System.out.println("YOU WON!");
+            wins++;
+            if (playerHand.isBlackjack()) {
+                this.chips += (int)(playerHand.getBetAmount() * (3.0/2.0));
+            } else {
+                this.chips += playerHand.getBetAmount();
+            }
+
+            if (playerHand.isDoubleDown()) {
+                return 2;
+            } else {
+                return 1;
+            }
         } else if (table.getDealerHand().getValue() == playerHand.getValue()) {
             System.out.println("PUSH!");
             pushes++;
+            return 0;
         } else {
             System.out.println("********** SCORING ERROR **************");
+            return 0;
         }
     }
 

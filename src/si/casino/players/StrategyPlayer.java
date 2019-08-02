@@ -161,6 +161,8 @@ public class StrategyPlayer implements Player{
         switch (play) {
             case "H": return Plays.HIT;
             case "D": return Plays.DOUBLE_DOWN;
+            case "Dh": return Plays.DOUBLE_DOWN;
+            case "Ds": return Plays.DOUBLE_DOWN;
             case "S": return Plays.STAND;
             case "SP": return Plays.SPLIT;
             default:

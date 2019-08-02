@@ -26,7 +26,7 @@ public class Game {
     private int splits;
 
     Player player;
-    private int chips;
+    private double chips;
 
 
     public Game() {
@@ -36,7 +36,8 @@ public class Game {
 
     public void run() {
 
-        chips = 1000;
+        final double STARTING_CHIPS = 1000;
+        chips = STARTING_CHIPS;
         List<Integer> validInts = new ArrayList<>();
         for (int i = 1; i <= 6; i++) {
             validInts.add(i);
@@ -150,8 +151,13 @@ public class Game {
         }
 
         float winRate = (float) wins / (wins+losses+splits);
+        float lossRate = (float) losses / (wins+losses+splits);
         System.out.println("Winrate: " + winRate*100 + "%");
+        System.out.println("House winrate: " + lossRate*100 + "%");
+        System.out.println("Average loss per game (in chips): " + (STARTING_CHIPS-chips)/(float)numberOfGames);
         System.out.println("The end!");
+
+
 
     }
 
@@ -185,7 +191,7 @@ public class Game {
                 System.out.println("SPLIT | HAND " + handCount + ": " + hand.toStringVerbose());
                 while (hand.getPossiblePlays().size() != 0) {
                     playerMakeMove(hand, faceUpCard);
-                    System.out.println("Game's hand " + handCount + ": " + hand.toStringVerbose());
+                    System.out.println("Player's hand " + handCount + ": " + hand.toStringVerbose());
                 }
                 handCount++;
             }
@@ -250,7 +256,8 @@ public class Game {
         }
 
         // DEALER
-        if (oponnentHand != null && !oponnentHand.isBust()) {
+        //if (oponnentHand != null && !oponnentHand.isBust()) {
+        if (oponnentHand != null) {
             while (!table.getDealerHand().isBust() && table.getDealerHand().getPossiblePlays().size() > 0) {
 
                 // Dealer must stand on 17
@@ -258,6 +265,12 @@ public class Game {
                     table.stand(table.getDealerHand());
                     System.out.println("Dealer stands! (17)");
                     break;
+                }
+
+                if (oponnentHand.isBust()) {
+                    if (table.getDealerHand().getValue() < 15) table.hit(table.getDealerHand());
+                    else table.stand(table.getDealerHand());
+                    continue;
                 }
 
                 if (table.getDealerHand().getValue() < oponnentHand.getValue()) {
@@ -304,7 +317,7 @@ public class Game {
             System.out.println("YOU WON!");
             wins++;
             if (playerHand.isBlackjack()) {
-                this.chips += (int)(playerHand.getBetAmount() * (3.0/2.0));
+                this.chips += (playerHand.getBetAmount() * (3.0/2.0));
             } else {
                 this.chips += playerHand.getBetAmount();
             }

@@ -268,7 +268,7 @@ public class Game {
                 }
 
                 if (oponnentHand.isBust()) {
-                    if (table.getDealerHand().getValue() < 15) table.hit(table.getDealerHand());
+                    if (table.getDealerHand().getValue() < 17) table.hit(table.getDealerHand());
                     else table.stand(table.getDealerHand());
                     continue;
                 }
@@ -277,16 +277,24 @@ public class Game {
                     table.hit(table.getDealerHand());
                     System.out.println("Dealer hits! Current dealer's hand: " + table.getDealerHand().toStringVerbose());
                 } else if (table.getDealerHand().getValue() == oponnentHand.getValue()) {
-                    if (table.getDealerHand().getValue() < 16) {
+                    if (table.getDealerHand().getValue() < 17) {
+                        // Dealer has to hit if he has less than 17
                         table.hit(table.getDealerHand());
-                        System.out.println("Dealer hits! Current dealer's hand: " + table.getDealerHand().toStringVerbose());
+                        System.out.println("Dealer hits! (Less than 17.) Current dealer's hand: " + table.getDealerHand().toStringVerbose());
                     } else {
                         table.stand(table.getDealerHand());
                         System.out.println("Dealer stands!");
                     }
                 } else {
-                    table.stand(table.getDealerHand());
-                    System.out.println("Dealer stands!");
+                    if (table.getDealerHand().getValue() < 17) {
+                        // Dealer has to hit if he has less than 17
+                        table.hit(table.getDealerHand());
+                        System.out.println("Dealer hits (Less than 17.) Current dealer's hand: " + table.getDealerHand().toStringVerbose());
+                    } else {
+                        table.stand(table.getDealerHand());
+                        System.out.println("Dealer stands!");
+                    }
+
                 }
             }
         } else {

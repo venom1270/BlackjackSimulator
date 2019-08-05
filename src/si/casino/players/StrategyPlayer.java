@@ -10,13 +10,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StrategyPlayer implements Player{
+public class StrategyPlayer implements Player {
 
     List<String> strategyLines;
     Map<KeyPair, Plays> playStrategy;
 
     List<String> bettingLines;
     Map<Integer, Float> bettingStrategy;
+
+    private final boolean DEBUG = false;
 
     public class KeyPair {
         private final Value dealer;
@@ -53,19 +55,25 @@ public class StrategyPlayer implements Player{
     @Override
     public Plays makePlay(Hand playerHand, Card faceUpCard) {
         if (playStrategy != null) {
-            System.out.println(playerHand.toString());
+            if (DEBUG)
+                System.out.println(playerHand.toString());
             Plays chosenPlay = playStrategy.get(new KeyPair(playerHand.toString(), faceUpCard.getValue()));
             if (!playerHand.getPossiblePlays().contains(chosenPlay)) {
                 // Handle plays taht are not possible anymore
                 // 1. Double down after hitting
                 // 2. Split after splitting
-                if (chosenPlay == Plays.DOUBLE_DOWN) {
-                    chosenPlay = Plays.HIT;
-                } else if (chosenPlay == Plays.SPLIT) {
-                    System.out.println(chosenPlay);
+
+                if (chosenPlay == Plays.SPLIT) {
+                    if (DEBUG)
+                        System.out.println(chosenPlay);
                     chosenPlay = playStrategy.get(new KeyPair(String.valueOf(playerHand.getValue()), faceUpCard.getValue()));
                 }
 
+                if (chosenPlay == Plays.DOUBLE_DOWN_OR_HIT) {
+                    chosenPlay = Plays.HIT;
+                } else if (chosenPlay == Plays.DOUBLE_DOWN_OR_STAND) {
+                    chosenPlay = Plays.STAND;
+                }
             }
             return chosenPlay;
         } else {
@@ -161,8 +169,8 @@ public class StrategyPlayer implements Player{
         switch (play) {
             case "H": return Plays.HIT;
             case "D": return Plays.DOUBLE_DOWN;
-            case "Dh": return Plays.DOUBLE_DOWN;
-            case "Ds": return Plays.DOUBLE_DOWN;
+            case "Dh": return Plays.DOUBLE_DOWN_OR_HIT;
+            case "Ds": return Plays.DOUBLE_DOWN_OR_STAND;
             case "S": return Plays.STAND;
             case "SP": return Plays.SPLIT;
             default:

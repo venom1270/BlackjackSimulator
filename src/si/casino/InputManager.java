@@ -27,6 +27,22 @@ public class InputManager {
         }
     }
 
+    public static long getValidInputLong(List<Long> validLongs) {
+        while (true) {
+            try {
+                System.out.print("> ");
+                long input = keyboard.nextLong();
+                if ((validLongs == null || validLongs.contains(input)) && input > 0) {
+                    keyboard.nextLine();
+                    return input;
+                } else {
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input!");
+            }
+        }
+    }
 
     public static char getValidInput(List<Character> validChars) {
         while (true) {

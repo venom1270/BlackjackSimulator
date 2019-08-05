@@ -63,7 +63,7 @@ public class Hand {
             this.possiblePlays.remove(Plays.SPLIT);
         }
 
-        if (this.cards.size() > 2) {
+        if (this.cards.size() > 2 || this.enableSplit == false) {
             this.possiblePlays.remove(Plays.DOUBLE_DOWN);
         }
 

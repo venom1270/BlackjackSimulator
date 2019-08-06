@@ -3,6 +3,9 @@ package si.casino;
 import si.casino.card.Card;
 import si.casino.card.Suit;
 import si.casino.card.Value;
+import si.casino.gui.BlackjackForm;
+
+import javax.swing.*;
 
 public class Main {
 
@@ -10,6 +13,9 @@ public class Main {
 
         Game game = new Game();
         game.run();
+
+        //BlackjackForm form = new BlackjackForm();
+        //form.run();
 
 
         /*

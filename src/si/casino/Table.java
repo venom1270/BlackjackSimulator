@@ -20,8 +20,12 @@ public class Table {
     private boolean playerSplit;
     private List<Hand> splitHands;
 
-    public Table(int numberOfDecks) {
+    private Rules rules;
+
+    public Table(int numberOfDecks, Rules rules) {
+        // TODO: merge numOfDecks into rules
         this.numberOfDecks = numberOfDecks;
+        this.rules = rules;
         initializeDeck();
         reset();
     }
@@ -45,8 +49,8 @@ public class Table {
 
     public void reset() {
         this.currentCard = 0;
-        this.dealerHand = new Hand();
-        this.playerHand = new Hand();
+        this.dealerHand = new Hand(rules);
+        this.playerHand = new Hand(rules);
         this.playerSplit = false;
         this.splitHands = new ArrayList<>();
         shuffleDeck();
@@ -96,10 +100,10 @@ public class Table {
         // TODO: support for more than 1 split?
 
         this.playerSplit = true;
-        Hand hand1 = new Hand();
+        Hand hand1 = new Hand(rules);
         hand1.add(hand.getCards().get(0));
         hand1.setEnableSplit(false);
-        Hand hand2 = new Hand();
+        Hand hand2 = new Hand(rules);
         hand2.add(hand.getCards().get(1));
         hand2.setEnableSplit(false);
 

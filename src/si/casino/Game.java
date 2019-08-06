@@ -29,6 +29,7 @@ public class Game {
     private double chips;
 
     private final boolean DEBUG = false;
+    private Rules rules;
 
 
     public Game() {
@@ -37,6 +38,8 @@ public class Game {
     }
 
     public void run() {
+
+        rules = new Rules();
 
         long startTime = System.currentTimeMillis();
 
@@ -47,7 +50,7 @@ public class Game {
             validInts.add(i);
         }
         System.out.println("Choose number of decks: (1-6)");
-        table = new Table(InputManager.getValidInputInt(validInts));
+        table = new Table(InputManager.getValidInputInt(validInts), rules);
 
         System.out.println("Choose player type: (1-Human, 2-Simulator_Random, 3-Simulator_Strategy)");
         validInts.clear();
@@ -62,7 +65,7 @@ public class Game {
         } else if (playerType == 3) {
             //player = new StrategyPlayer("strategies/baseline_strategy.csv");
             //String strategyFile = "baseline_strategy.csv";
-            String strategyFile = "one_deck_yes_ds.csv";
+            String strategyFile = "one_deck_no_ds.csv";
             player = new StrategyPlayer("strats/play/" + strategyFile, "strats/betting/" + strategyFile);
         }
 
@@ -308,9 +311,15 @@ public class Game {
 
         // STAND ON 17
         if (table.getDealerHand().getValue() == 17) {
-            table.stand(table.getDealerHand());
-            if (DEBUG)
-                System.out.println("Dealer stands! (17)");
+            if (rules.DEALER_STANDS_ON_SOFT_17) {
+                table.stand(table.getDealerHand());
+                if (DEBUG)
+                    System.out.println("Dealer stands! (17)");
+            } else {
+                table.hit(table.getDealerHand());
+                if (DEBUG)
+                    System.out.println("Dealer hits! (17)");
+            }
         } else if (!table.getDealerHand().isBust()){ // STAND IF NOT BUST
             table.stand(table.getDealerHand());
             if (DEBUG)

@@ -26,14 +26,16 @@ public class Hand {
     private boolean bust;
 
     private List<Plays> possiblePlays;
+    private Rules rules;
 
-    public Hand() {
+    public Hand(Rules rules) {
         this.cards = new ArrayList<>();
         this.possiblePlays = new ArrayList<>();
         this.possiblePlays.add(Plays.HIT);
         this.possiblePlays.add(Plays.STAND);
         this.possiblePlays.add(Plays.DOUBLE_DOWN);
         this.enableSplit = true;
+        this.rules = rules;
     }
 
     public void add(Card card) {
@@ -52,7 +54,7 @@ public class Hand {
         if (card.getValue() == Value.ACE) {
             this.ace++;
         }
-        if (this.cards.size() == 2 && this.cards.get(0).getValue() == this.cards.get(1).getValue()) {
+        if (this.cards.size() == 2 && CardValue.getValue(this.cards.get(0)) == CardValue.getValue(this.cards.get(1))) {
             same = true;
             if (enableSplit) {
                 // Only enable splitting if enableSplit is true - this is used to limit only one split per round
@@ -63,9 +65,15 @@ public class Hand {
             this.possiblePlays.remove(Plays.SPLIT);
         }
 
-        if (this.cards.size() > 2 || this.enableSplit == false) {
+        // Remove double down play
+        if (this.cards.size() > 2) {
             this.possiblePlays.remove(Plays.DOUBLE_DOWN);
         }
+        // If doubling after split is not allowed and splitting not allowed (because we already split once)
+        if (!rules.DOUBLE_AFTER_SPLIT && !this.enableSplit) {
+            this.possiblePlays.remove(Plays.DOUBLE_DOWN);
+        }
+
 
         this.value += CardValue.getValue(card);
 
@@ -86,6 +94,11 @@ public class Hand {
             if (this.cards.size() == 2 && this.enableSplit) {
                 this.blackjack = true;
             }
+            this.possiblePlays.clear();
+        }
+
+        // If we split aces, we only get one additional card per hand
+        if (!rules.HIT_SPLIT_ACES && this.cards.size() == 2 && !enableSplit && cards.get(0).getValue() == Value.ACE) {
             this.possiblePlays.clear();
         }
 

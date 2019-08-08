@@ -53,7 +53,7 @@ class Card {
         this.suit = suit;
 
         // Concatentate image path
-        let imagePath = "gui/cards/";
+        let imagePath = "images/cards/";
         if ([Value.ACE, Value.KING, Value.QUEEN, Value.JACK].includes(value)) {
             imagePath += value.charAt(0);
         } else {

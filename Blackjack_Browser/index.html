@@ -12,30 +12,67 @@
         <script src="scripts/plays.js"></script>
         <script src="scripts/hand.js"></script>
         <script src="scripts/table.js"></script>
+        <script src="scripts/game.js"></script>
     </head>
 
 
-    <body onload="init()">
+    <body>
 
-        <h1>Blackjack Simulator</h1>
+        <h1>Blackjack</h1>
+
+        <div>Select number of decks and input your bet below.</div>
+
+        <div>
+            <input id="inNumberOfDecks" min="1" max="8" style="width:150px;" placeholder="Number of decks" type="number" />
+            <button onclick="start()">NEW GAME</button> 
+        </div>
+
+        
 
 
+        <div>
+            <h2>Dealer's hand</h2>
+            
+            <input id="tbDealerStatus" style="width: 1000px;" type="text" />
+            <div id="divDealerHand" class="cardSpace">
+                <img id="imgDealerFaceDownCard" style="display: none;" src="images/cards/blue_back.png" class="card" />
+            </div>
 
-        <button onclick="start()">START</button> 
+        </div>
 
-        <br/>
-        <br/>
+        <div>
+            <h2>Your hand</h2>
 
-        <input id="tbStatus" style="width: 1000px;" type="text" />
+            <input id="inBet" disabled="true" type="number" min="1" max="1000" placeholder="Bet amount" style="width: 100px;" />
+            <button id="bBet" disabled="true" onclick="newRound()">BET!</button>
+            <br/>
+            <input id="tbPlayerStatus" style="width: 1000px;" type="text" />
+            <div id="divPlayerHands">
 
-        <br/>
-        <br/>
+                <div id="divPlayerHand0" class="cardSpace">
+                </div>
+
+            </div>
+            
+
+            </div>
+        </div>
+
 
         <div id="playerArea">
-            <button id="bHit" onclick="hit()">HIT</button>
-            <button id="bStand" onclick="stand()">STAND</button>
-            <button id="bDoubleDown" onclick="doubleDown()">DOUBLE DOWN</button>
-            <button id="bSplit" onclick="split()">SPLIT</button>
+            <button id="bHit" style="display: none;" onclick="hit()">HIT</button>
+            <button id="bStand" style="display: none;" onclick="stand()">STAND</button>
+            <button id="bDoubleDown" style="display: none;" onclick="doubleDown()">DOUBLE DOWN</button>
+            <button id="bSplit" style="display: none;" onclick="split()">SPLIT</button>
+        </div>
+
+        <br/>
+
+        <div id="statsBox">
+            Wins: <span id="statWins">0</span> <br/>
+            Losses: <span id="statLosses">0</span> <br/>
+            Pushes: <span id="statPushes">0</span> <br/>
+            Chips: <span id="statChips">0</span> <br/>
         </div>
 
     </body>

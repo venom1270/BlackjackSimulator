@@ -1,0 +1,15 @@
+.cardSpace {
+    width: 80%;
+    height:250px;
+}
+
+.card {
+    height: 250px;
+}
+
+#statsBox {
+    border: 2px solid black;
+    width: 100px;
+    padding: 2px;
+    padding-left: 5px;
+}

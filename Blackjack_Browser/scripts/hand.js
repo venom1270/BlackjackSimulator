@@ -158,5 +158,14 @@ class Hand {
     get possiblePlays() {
         return this.possiblePlays;
     }
+    get bust() {
+        return this.bust;
+    }
+    get betAmount() {
+        return this.betAmount;
+    }
+    get blackjack() {
+        return this.blackjack;
+    }
 
 }

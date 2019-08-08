@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <meta name="author" content="ZS">
+        <meta name="description" content="Blackjack Simulator with GUI">
+        
+        <link href="style/css.css" rel="stylesheet">
+        <script src="scripts/main.js"></script>
+        <script src="scripts/card.js"></script>
+        <script src="scripts/utils.js"></script>
+        <script src="scripts/plays.js"></script>
+        <script src="scripts/hand.js"></script>
+        <script src="scripts/table.js"></script>
+    </head>
+
+
+    <body onload="init()">
+
+        <h1>Blackjack Simulator</h1>
+
+
+
+        <button onclick="start()">START</button> 
+
+        <br/>
+        <br/>
+
+        <input id="tbStatus" style="width: 1000px;" type="text" />
+
+        <br/>
+        <br/>
+
+        <div id="playerArea">
+            <button id="bHit" onclick="hit()">HIT</button>
+            <button id="bStand" onclick="stand()">STAND</button>
+            <button id="bDoubleDown" onclick="doubleDown()">DOUBLE DOWN</button>
+            <button id="bSplit" onclick="split()">SPLIT</button>
+        </div>
+
+    </body>
+</html>

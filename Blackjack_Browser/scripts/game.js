@@ -15,6 +15,8 @@ class Game {
     rules = null; // rules
     gui = null;
 
+    currentPlayerHandIndex = 0;
+
     constructor() {
 
     }
@@ -39,13 +41,16 @@ class Game {
             return;
         }
 
+        this.currentPlayerHandIndex = 0;
+
         this.clear();
 
         this.table.reset();
 
         this.updateStatsGUI();
 
-        this.table.playerHand.betAmount = this.gui.inBet.value;
+        //this.table.playerHand.betAmount = this.gui.inBet.value;
+        this.table.setBet(this.gui.inBet.value);
         this.enableBetting(false);
 
         // Main loop
@@ -53,11 +58,14 @@ class Game {
         this.updateGUIInitial();
         this.updateGui();
 
-        if (this.table.playerHand.blackjack || this.table.dealerHand.blackjack) {
-            this.table.playerHand.possiblePlays.splice(0, this.table.playerHand.possiblePlays.length);
+        this.selectHandGui(0);
+
+        let pHand = this.getPlayerHand();
+        if (this.getPlayerHand().blackjack || this.table.dealerHand.blackjack) {
+            pHand.possiblePlays.splice(0, pHand.possiblePlays.length);
             this.updateGui();
             this.playDealerHand();
-            this.calculateScore();
+            setTimeout(() => this.calculateScore(), 1000);
         }
     }
 
@@ -91,8 +99,8 @@ class Game {
     updateGUIInitial() {
         this.showDealerFaceDownCard(true);
         this.drawCard(this.gui.divDealerHand, this.table.dealerHand.cards[1]);
-        this.drawCard(this.gui.divPlayerHand0, this.table.playerHand.cards[0]);
-        this.drawCard(this.gui.divPlayerHand0, this.table.playerHand.cards[1]);
+        this.drawCard(this.gui.divPlayerHandArray[0], this.getPlayerHand().cards[0]);
+        this.drawCard(this.gui.divPlayerHandArray[0], this.getPlayerHand().cards[1]);
     }
 
     hideAllButtons() {
@@ -103,12 +111,9 @@ class Game {
     }
     
     updateGui() {
+
         
-        // TODO: temporary: get correct player hand
-        let pHand = this.table.playerHand;
-        if (this.table.splitHands != null && this.table.splitHands.length > 0) {
-            pHand = this.table.splitHands[0];
-        }
+        let pHand = this.getPlayerHand();
     
         // Update output status
         this.gui.tbPlayerStatus.value = pHand.toString();
@@ -122,9 +127,21 @@ class Game {
                 case Play.HIT: g.bHit.style.display = "inline"; break;
                 case Play.STAND: g.bStand.style.display = "inline"; break;
                 case Play.DOUBLE_DOWN: g.bDoubleDown.style.display = "inline"; break;
-                //case Play.SPLIT: g.bSplit.style.display = "inline"; break; // TODO SPLIT
+                case Play.SPLIT: g.bSplit.style.display = "inline"; break;
             }
         });
+
+        // TODO: Maybe make nicer??
+        if (pHand.possiblePlays.length == 0) {
+            this.deselectHandGui(this.currentPlayerHandIndex);
+        }
+    }
+
+    selectHandGui(index) {
+        this.gui.divPlayerHandArray[index].className += " currentHand";
+    }
+    deselectHandGui(index) {
+        this.gui.divPlayerHandArray[index].className = this.gui.divPlayerHandArray[index].className.replace(" currentHand", "");
     }
 
     playDealerHand() {
@@ -145,57 +162,66 @@ class Game {
     }
 
     calculateScore() {
-        let pHand = this.table.playerHand;
-        let dHand = this.table.dealerHand;
 
-        if (pHand.blackjack && dHand.blackjack) {
-            this.statsPush();
-        } else if (dHand.blackjack) {
-            this.statsLose();
-        } else if (pHand.blackjack) {
-            this.statsWin();
-        } else {
-            if (pHand.bust || (!dHand.bust && dHand.value > pHand.value)) {
-                this.statsLose();
-            } else if (dHand.bust || pHand.value > dHand.value) {
-                this.statsWin();
-            } else if (dHand.value == pHand.value) {
-                this.statsPush();
+        let dHand = this.table.dealerHand;
+        let pHands = this.table.playerHands;
+
+        pHands.forEach(function(pHand, i) {
+            if (pHand.blackjack && dHand.blackjack) {
+                this.statsPush(pHand, i);
+            } else if (dHand.blackjack) {
+                this.statsLose(pHand, i);
+            } else if (pHand.blackjack) {
+                this.statsWin(pHand, i);
             } else {
-                alert("Scoring error!");
-                console.log("Scoring error!");
+                if (pHand.bust || (!dHand.bust && dHand.value > pHand.value)) {
+                    this.statsLose(pHand, i);
+                } else if (dHand.bust || pHand.value > dHand.value) {
+                    this.statsWin(pHand, i);
+                } else if (dHand.value == pHand.value) {
+                    this.statsPush(pHand, i);
+                } else {
+                    alert("Scoring error!");
+                    console.log("Scoring error!");
+                }
             }
-        }
+        }.bind(this));
+
+        
 
         this.updateStatsGUI();
         this.enableBetting(true);
         
     }
 
-    statsWin() {
-        let pHand = this.table.playerHand;
-        if (pHand.blackjack) {
-            alert("You won (BLACKJACK)!");
-            this.chips += pHand.betAmount * 3.0/2.0;
+    statsWin(hand, i) {
+        if (hand.blackjack) {
+            this.drawScoreText(this.gui.divPlayerHandArray[i], "BLACKJACK");
+            this.chips += hand.betAmount * 3.0/2.0;
         } else {
-            alert("You won!");
-            this.chips += Number(pHand.betAmount);
+            this.drawScoreText(this.gui.divPlayerHandArray[i], "WIN");
+            this.chips += Number(hand.betAmount);
         }
         this.wins++;
     }
-    statsLose() {
-        let pHand = this.table.playerHand;
+    statsLose(hand, i) {
         if (this.table.dealerHand.blackjack) {
-            alert("You lost (DEALER BLACKJACK).");
-        } else {
-            alert("You lost.");
-        }
+            this.drawScoreText(this.gui.divDealerHand, "BLACKJACK");
+        } 
+        this.drawScoreText(this.gui.divPlayerHandArray[i], "LOSS");
         this.losses++;
-        this.chips -= pHand.betAmount;
+        this.chips -= hand.betAmount;
     }
-    statsPush() {
-        alert("Push!");
+    statsPush(hand, i) {
+        this.drawScoreText(this.gui.divPlayerHandArray[i], "PUSH");
         this.pushes++; 
+    }
+
+    drawScoreText(div, text) {
+        let scoreText = document.createElement("span");
+        scoreText.className = "scoreText";
+        scoreText.innerHTML = text;
+        div.appendChild(scoreText);
     }
 
     updateStatsGUI() {
@@ -210,19 +236,27 @@ class Game {
         if (hand.possiblePlays.includes(play)) {
 
             switch (play) {
-                case Play.HIT: this.table.hit(hand); this.drawCard(this.gui.divPlayerHand0, hand.cards[hand.cards.length-1]); break;
+                case Play.HIT: this.table.hit(hand); this.handleHitGui(hand); break;
                 case Play.STAND: this.table.stand(hand); break;
-                case Play.DOUBLE_DOWN: this.table.doubleDown(hand); this.drawCard(this.gui.divPlayerHand0, hand.cards[hand.cards.length-1]); break;
-                case Play.SPLIT: this.table.split(hand); break; // TODO draw
+                case Play.DOUBLE_DOWN: this.table.doubleDown(hand); this.drawCard(this.gui.divPlayerHandArray[this.currentPlayerHandIndex], hand.cards[hand.cards.length-1]); break;
+                case Play.SPLIT: this.table.split(hand); this.handleSplitGui(); break;
             }
 
             this.updateGui();
 
-            // When player finished play dealer
+            // When player hand is finished
             if (hand.possiblePlays.length == 0) {
-                this.playDealerHand();
-                //setTimeout(this.calculateScore, 1000);
-                this.calculateScore();
+                // Increase index
+                this.currentPlayerHandIndex++;
+                // If player doesn't have any more hands, play dealer
+                // Otherwise update GUI with increased value if currentPlayerHandIndex
+                if (this.table.playerHands.length <= this.currentPlayerHandIndex) {
+                    this.playDealerHand();
+                    setTimeout(() => this.calculateScore(), 1000);
+                } else {
+                    this.selectHandGui(this.currentPlayerHandIndex);
+                    this.updateGui();
+                }
             }
 
 
@@ -231,10 +265,14 @@ class Game {
         }
     }
 
+    handleHitGui(hand) {
+        this.drawCard(this.gui.divPlayerHandArray[this.currentPlayerHandIndex], hand.cards[hand.cards.length-1]);
+    }
+
     clear() {
         this.hideAllButtons();
         this.gui.divPlayerHands.innerHTML = "<div id=\"divPlayerHand0\" class=\"cardSpace\"></div>";
-        this.gui.divPlayerHand0 = document.getElementById("divPlayerHand0");
+        this.gui.divPlayerHandArray[0] = document.getElementById("divPlayerHand0");
         this.gui.divDealerHand.innerHTML = "<img id=\"imgDealerFaceDownCard\" style=\"display: none;\" src=\"images/cards/blue_back.png\" class=\"card\" />";
 
         this.gui.statWins.innerHTML = "0";
@@ -246,7 +284,57 @@ class Game {
         this.gui.tbDealerStatus.value = "";
     }
 
+    clearPlayerHands() {
+        this.gui.divPlayerHandArray.forEach(function(el) {
+            if (el != null ) {
+                el.innerHTML = "";
+            }
+        });
+    }
+
+
+    // Useful: https://stackoverflow.com/questions/24383519/why-do-i-lose-reference-to-an-element
+    generateHand(id) {
+        let idString = "divPlayerHand" + id;
+        // Append div container
+        let divNewHand = document.createElement("div");
+        divNewHand.className = "cardSpace";
+        divNewHand.id = idString;
+        this.gui.divPlayerHands.appendChild(divNewHand);
+        // Save it's reference
+        this.gui.divPlayerHandArray[id] = document.getElementById(idString);
+    }
+
+    handleSplitGui() {
+        // Generate new hand
+        this.generateHand(this.table.playerHands.length-1);
+
+        // Get references to both hands
+        let splitHand1 = this.gui.divPlayerHandArray[this.currentPlayerHandIndex];
+        let splitHand2 = this.gui.divPlayerHandArray[this.table.playerHands.length-1];
+
+        let cardsHand1 = this.table.playerHands[this.currentPlayerHandIndex].cards;
+        let cardsHand2 = this.table.playerHands[this.table.playerHands.length-1].cards;
+
+        // Clear old hand
+        splitHand1.innerHTML = "";
+
+        // Draw cards to both hands ("update")
+        this.drawCard(splitHand1, cardsHand1[0]);
+        this.drawCard(splitHand1, cardsHand1[1]);
+        this.drawCard(splitHand2, cardsHand2[0]);
+        this.drawCard(splitHand2, cardsHand2[1]);
+
+    }
+
+    getPlayerHand() {
+        return this.table.playerHands[Math.min(this.currentPlayerHandIndex, this.table.playerHands.length-1)];
+    }
+
     get table() {
         return this.table;
+    }
+    get currentPlayerHandIndex() {
+        return this.currentPlayerHandIndex;
     }
 }

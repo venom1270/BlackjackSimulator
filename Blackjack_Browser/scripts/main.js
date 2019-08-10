@@ -15,7 +15,8 @@ function initGui() {
     gui.imgDealerFaceDownCard = document.getElementById("imgDealerFaceDownCard")
     gui.divDealerHand = document.getElementById("divDealerHand");
     gui.divPlayerHands = document.getElementById("divPlayerHands");
-    gui.divPlayerHand0 = document.getElementById("divPlayerHand0");
+    gui.divPlayerHandArray = [null, null, null, null, null, null, null, null]
+    gui.divPlayerHandArray[0] = document.getElementById("divPlayerHand0");
     gui.statWins = document.getElementById("statWins");
     gui.statLosses = document.getElementById("statLosses");
     gui.statPushes = document.getElementById("statPushes");
@@ -50,19 +51,20 @@ function newRound() {
     }
 }
 
+
 function hit() {
-    game.makePlay(Play.HIT, game.table.playerHand);
+    game.makePlay(Play.HIT, game.getPlayerHand());
     //checkTable();
 }
 function stand() {
-    game.makePlay(Play.STAND, game.table.playerHand);
+    game.makePlay(Play.STAND, game.getPlayerHand());
     //checkTable();
 }
 function doubleDown() {
-    game.makePlay(Play.DOUBLE_DOWN, game.table.playerHand);
+    game.makePlay(Play.DOUBLE_DOWN, game.getPlayerHand());
     //checkTable();
 }
 function split() {
-    game.makePlay(Play.SPLIT, game.table.playerHand);
+    game.makePlay(Play.SPLIT, game.getPlayerHand());
     //checkTable();
 }

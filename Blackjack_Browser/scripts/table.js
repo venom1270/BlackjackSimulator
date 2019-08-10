@@ -5,10 +5,10 @@ class Table {
     numberOfDecks = 0; // int: number of decks at this table
 
     dealerHand = null; // Hand: dealer
-    playerHand = null; // Hand: player // TODO: add multiple
+    //playerHand = null; // Hand: player // TODO: add multiple
 
     playerSplit = false; // boolean
-    splitHands = []; // Array of Hands if player splits
+    playerHands = []; // Array of Hands if player splits
 
     rules = null; // Rules
 
@@ -38,9 +38,9 @@ class Table {
     reset() {
         this.currentCard = 0;
         this.dealerHand = new Hand(name="Dealer");
-        this.playerHand = new Hand(name="Player");
+        this.playerHands = [];
+        this.playerHands.push(new Hand(name="Player"));
         this.playerSplit = false;
-        this.splitHands = [];
         this.shuffleDeck();
     }
 
@@ -53,9 +53,11 @@ class Table {
     }
 
     deal() {
-        this.playerHand.add(this.getCard());
+        this.playerHands[0].add(this.getCard());
+        //this.playerHands[0].add(new Card(Value.TEN, Suit.SPADES));
         this.dealerHand.add(this.getCard());
-        this.playerHand.add(this.getCard());
+        this.playerHands[0].add(this.getCard());
+        //this.playerHands[0].add(new Card(Value.TEN, Suit.SPADES));
         this.dealerHand.add(this.getCard());
     }
 
@@ -83,10 +85,12 @@ class Table {
         this.playerSplit = true;
         let hand1 = new Hand();
         hand1.add(hand.cards[0]);
-        hand1.enableSplit = false;
+        //hand1.enableSplit = false;
+        hand1.fromSplit = true;
         let hand2 = new Hand();
         hand2.add(hand.cards[1]);
-        hand2.enableSplit = false;
+        //hand2.enableSplit = false;
+        hand2.fromSplit = true;
 
         hand1.add(this.getCard());
         hand2.add(this.getCard());
@@ -94,22 +98,22 @@ class Table {
         hand1.betAmount = hand.betAmount;
         hand2.betAmount = hand.betAmount;
 
-        this.splitHands.push(hand1);
-        this.splitHands.push(hand2);
+        //remove(this.playerHands, hand);
+        let i = this.playerHands.indexOf(hand);
+        this.playerHands[i] = hand1;
+        //this.playerHands.splice(i+1, 0, hand2); // This would be nicer (split hands together) but adding to the back of array will suffice too.
+        this.playerHands.push(hand2);
     }
 
     setBet(bet) {
-        this.playerHand.betAmount = bet;
+        this.playerHands[0].betAmount = bet;
     }
 
-    get playerHand() {
-        return this.playerHand;
+    get playerHands() {
+        return this.playerHands;
     }
     get dealerHand() {
         return this.dealerHand;
-    }
-    get splitHands() {
-        return this.splitHands;
     }
 
 }

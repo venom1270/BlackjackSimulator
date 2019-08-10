@@ -12,6 +12,8 @@ class Hand {
 
     betAmount = 0; // float: current bet
 
+
+    fromSplit = false; // boolean: for blackjack check
     enableSplit = true; // boolean: split flag
 
     bust = false; // boolean: bust flag
@@ -66,7 +68,7 @@ class Hand {
             this.ace--;
             if (this.value == 21) {
                 // We use enableSplit to check if this is the original hand -- is this case even possible??? TODO
-                if (this.cards.length == 2 && this.enableSplit) {
+                if (this.cards.length == 2 && !this.fromSplit) {
                     this.blackjack = true;
                 }
                 // Clear array
@@ -77,7 +79,7 @@ class Hand {
             // Clear array
             this.possiblePlays.splice(0, this.possiblePlays.length);
         } else if (this.value === 21) {
-            if (this.cards.length == 2 && this.enableSplit) {
+            if (this.cards.length == 2 && !this.fromSplit) {
                 this.blackjack = true;
             }
             // Clear array
@@ -148,6 +150,9 @@ class Hand {
 
     set betAmount(betAmount) {
         this.betAmount = betAmount;
+    }
+    set fromSplit(fromSplit) {
+        this.fromSplit = fromSplit;
     }
     get betAmount() {
         return this.betAmount;

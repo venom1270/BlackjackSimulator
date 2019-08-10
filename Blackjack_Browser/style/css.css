@@ -1,11 +1,11 @@
 .cardSpace {
     width: 80%;
-    height:250px;
+    height:205px;
     position: relative; /* We need this so top align works for .scoreText */
 }
 
 .card {
-    height: 250px;
+    height: 200px;
 }
 
 .currentHand {

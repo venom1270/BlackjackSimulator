@@ -244,20 +244,31 @@ class Game {
 
             this.updateGui();
 
-            // When player hand is finished
-            if (hand.possiblePlays.length == 0) {
-                // Increase index
-                this.currentPlayerHandIndex++;
-                // If player doesn't have any more hands, play dealer
-                // Otherwise update GUI with increased value if currentPlayerHandIndex
+            
+            let pHand = this.getPlayerHand();
+            // Check if no more moves: iterate through hands until you find one with valid moves or play dealer.
+            if (pHand.possiblePlays.length == 0) {
+                while (pHand != null && pHand.possiblePlays.length == 0) {
+                    // Increase index
+                    this.currentPlayerHandIndex++;
+                    pHand = this.getPlayerHand();
+                    // If player doesn't have any more hands, play dealer
+                    // Otherwise update GUI with increased value if currentPlayerHandIndex
+                    
+                }
                 if (this.table.playerHands.length <= this.currentPlayerHandIndex) {
                     this.playDealerHand();
                     setTimeout(() => this.calculateScore(), 1000);
                 } else {
                     this.selectHandGui(this.currentPlayerHandIndex);
+                    console.log("QWEQWE");
                     this.updateGui();
                 }
             }
+
+            
+
+            
 
 
         } else {
@@ -328,7 +339,11 @@ class Game {
     }
 
     getPlayerHand() {
-        return this.table.playerHands[Math.min(this.currentPlayerHandIndex, this.table.playerHands.length-1)];
+        if (this.currentPlayerHandIndex < this.table.playerHands.length) {
+            return this.table.playerHands[Math.min(this.currentPlayerHandIndex, this.table.playerHands.length-1)];
+        } else {
+            return null;
+        }
     }
 
     get table() {
